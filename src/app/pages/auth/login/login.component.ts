@@ -32,7 +32,7 @@ export class LoginComponent {
         Swal.fire({
           icon: 'error',
           title: 'Error de autenticación',
-          text: "La contraseña o correo que has introducido es incorrecto",
+          text: "La contraseña o correo que has introducido son incorrectos",
           confirmButtonText: 'Aceptar',
         });
       },
@@ -40,7 +40,7 @@ export class LoginComponent {
   }
 
   logout(){
-    console.log(this.authService.logout());
+    this.authService.logout()
   }
 
 }

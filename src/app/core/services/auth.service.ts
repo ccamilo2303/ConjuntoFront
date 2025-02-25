@@ -45,4 +45,10 @@ export class AuthService {
         return null;
     }
 
+    isAuthenticated(): Observable<boolean> {
+        return this.getAuthState().pipe(
+            map(user => !!user)
+        );
+    }
+
 }

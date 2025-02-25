@@ -11,7 +11,7 @@ export const appRoutes: Routes = [
     {
         path: '',
         component: LayoutComponent,
-        canActivate: [AuthGuard],
+        canActivate: [LandingGuard],
         children: [
             { path: '', component: Dashboard },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
@@ -19,8 +19,8 @@ export const appRoutes: Routes = [
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }
         ]
     },
-    { path: 'landing', component: LandingComponent, canActivate: [LandingGuard] },
+    { path: 'landing', component: LandingComponent },
     { path: 'notfound', component: Notfound },
-    { path: 'auth', loadChildren: () => import('./app/pages/auth/auth.routes') },
+    { path: 'auth', canActivate: [AuthGuard], loadChildren: () => import('./app/pages/auth/auth.routes') },
     { path: '**', redirectTo: '/notfound' }
 ];
