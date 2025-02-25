@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Auth, signInWithEmailAndPassword, signOut, User, onAuthStateChanged } from '@angular/fire/auth';
+import { Auth, signInWithEmailAndPassword, signOut, User, onAuthStateChanged, sendPasswordResetEmail } from '@angular/fire/auth';
 import { from, Observable, map } from 'rxjs';
 
 @Injectable({
@@ -15,6 +15,10 @@ export class AuthService {
         );
     }
 
+    forgotPassword(email: string): Observable<void> {
+        return from(sendPasswordResetEmail(this.auth, email));
+    }
+    
     logout(): Promise<boolean> {
         return signOut(this.auth).then(() => {
             return true;
