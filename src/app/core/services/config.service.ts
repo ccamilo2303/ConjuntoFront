@@ -6,20 +6,11 @@ import { Injectable } from '@angular/core';
 export class ConfigService {
 
     private configApp = {
-        apiUrl: 'https://api.miapp.com',
-        modoProduccion: true,
-        tiempoEspera: 5000
+        apiUrl: 'https://21eb4a60-3292-4dff-bd5a-dcbd83ab80c1.mock.pstmn.io',
     };
 
     getApiUrl(): string {
         return this.configApp.apiUrl;
     }
-
-    isProduccion(): boolean {
-        return this.configApp.modoProduccion;
-    }
-
-    getTiempoEspera(): number {
-        return this.configApp.tiempoEspera;
-    }
+    
 }

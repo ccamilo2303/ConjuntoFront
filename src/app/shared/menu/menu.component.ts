@@ -22,6 +22,24 @@ export class MenuComponent {
         items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
       },
       {
+        label: 'Gestión',
+        items: [
+          { label: 'Solicitudes', icon: 'pi pi-fw pi-home', routerLink: ['/management/requests'] },
+          { label: 'Residentes', icon: 'pi pi-fw pi-home', routerLink: ['/management/residents'] },
+          { label: 'Unidades', icon: 'pi pi-fw pi-home', routerLink: ['/management/units'] },
+          { label: 'Conceptos', icon: 'pi pi-fw pi-home', routerLink: ['/management/concepts'] },
+          { label: 'Avisos', icon: 'pi pi-fw pi-home', routerLink: ['/management/notices'] },
+        ]
+      },
+      {
+        label: 'Cuenta De Cobro',
+        items: [
+          { label: 'Generar', icon: 'pi pi-fw pi-home', routerLink: ['/billing/generate '] },
+          { label: 'Consultar', icon: 'pi pi-fw pi-home', routerLink: ['/billing/list'] },
+          { label: 'Pago Manual', icon: 'pi pi-fw pi-home', routerLink: ['/billing/manual-payment'] },
+        ]
+      },
+      {
         label: 'UI Components',
         items: [
           { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] },

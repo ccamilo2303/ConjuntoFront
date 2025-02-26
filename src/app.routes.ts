@@ -14,6 +14,7 @@ export const appRoutes: Routes = [
         canActivate: [LandingGuard],
         children: [
             { path: '', component: Dashboard },
+            { path: 'management', loadChildren: () => import('./app/pages/management/management.routes') },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }
