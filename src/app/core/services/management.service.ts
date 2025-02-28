@@ -7,7 +7,7 @@ import { RequestsResponse, UpdateStateRequest } from '../models/request.model';
 @Injectable({
     providedIn: 'root'
 })
-export class RequestService {
+export class ManagementService {
 
     private configService = inject(ConfigService);
 
