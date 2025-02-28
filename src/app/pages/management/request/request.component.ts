@@ -18,7 +18,7 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ManagementService } from '../../../core/services/management.service';
+import { RequestService } from '../../../core/services/request.service';
 import { RequestsResponse, Request, UpdateStateRequest } from '../../../core/models/request.model';
 
 interface Column {
@@ -58,7 +58,7 @@ interface Column {
 
 export class RequestComponent {
 
-  private managementService = inject(ManagementService);
+  private requestService = inject(RequestService);
   private confirmationService = inject(ConfirmationService);
   private messageService = inject(MessageService);
 
@@ -74,7 +74,7 @@ export class RequestComponent {
   }
 
   getRequests() {
-    this.managementService.getRequests(10, 0).subscribe((requestsResponse: RequestsResponse) => {
+    this.requestService.getRequests(10, 0).subscribe((requestsResponse: RequestsResponse) => {
       this.requests.set(requestsResponse.solicitudes);
     });
 
@@ -97,7 +97,7 @@ export class RequestComponent {
           estadoSolicitud: 1,
           motivoRechazo: ""
         };
-        this.managementService.updateStateRequest(request.id, this.updateStateRequest).subscribe({
+        this.requestService.updateStateRequest(request.id, this.updateStateRequest).subscribe({
           next: () => {
             this.messageService.add({ 
               severity: 'success', 
@@ -141,7 +141,7 @@ export class RequestComponent {
       motivoRechazo: this.motivoRechazo
     };
   
-    this.managementService.updateStateRequest(this.selectedRequest?.id!, this.updateStateRequest).subscribe({
+    this.requestService.updateStateRequest(this.selectedRequest?.id!, this.updateStateRequest).subscribe({
       next: () => {
         this.messageService.add({ 
           severity: 'success', 
