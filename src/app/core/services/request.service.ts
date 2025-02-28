@@ -18,7 +18,7 @@ export class RequestService {
     }   
 
     updateStateRequest(id: string, updateStateRequest: UpdateStateRequest): Observable<any> {
-        return this.http.put<UpdateStateRequest>(`${this.configService.getApiUrl()}/web/solicitud/${id}/estado`, updateStateRequest);
+        return this.http.put<any>(`${this.configService.getApiUrl()}/web/solicitud/${id}/estado`, updateStateRequest);
     }
 
 }

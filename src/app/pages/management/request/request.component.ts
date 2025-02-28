@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,7 +18,6 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { Product, ProductService } from '../../service/product.service';
 import { RequestService } from '../../../core/services/request.service';
 import { RequestsResponse, Request, UpdateStateRequest } from '../../../core/models/request.model';
 
@@ -49,9 +48,10 @@ interface Column {
     TagModule,
     InputIconModule,
     IconFieldModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    TextareaModule
   ],
-  providers: [ConfirmationService],
+  providers: [ConfirmationService, MessageService],
   templateUrl: './request.component.html',
   styleUrl: './request.component.scss'
 })
@@ -60,18 +60,22 @@ export class RequestComponent {
 
   private requestService = inject(RequestService);
   private confirmationService = inject(ConfirmationService);
+  private messageService = inject(MessageService);
 
   requests = signal<Request[]>([]);
   cols!: Column[];
-  motivoRechazo: string = "";
+  rejectDialog: boolean = false;
+  motivoRechazo: string = '';
+  selectedRequest: Request | null = null;
+  updateStateRequest: UpdateStateRequest | undefined;
 
   ngOnInit() {
     this.getRequests();
   }
 
   getRequests() {
-    this.requestService.getRequests(10, 0).subscribe((requestResponse: RequestsResponse) => {
-      this.requests.set(requestResponse.solicitudes);
+    this.requestService.getRequests(10, 0).subscribe((requestsResponse: RequestsResponse) => {
+      this.requests.set(requestsResponse.solicitudes);
     });
 
   }
@@ -83,53 +87,79 @@ export class RequestComponent {
   approveRequest(request: Request) {
     this.confirmationService.confirm({
       message: 'Estas seguro de aprobar la solicitud de: ' + request.nombre + '?',
-      header: 'Aprobar',
+      header: 'Aprobación',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Aprobar',
       rejectLabel: 'Cancelar',
       rejectVisible: true,
       accept: () => {
-        let updateStateRequest: UpdateStateRequest = {
+        this.updateStateRequest = {
           estadoSolicitud: 1,
           motivoRechazo: ""
         };
-        this.requestService.updateStateRequest(request.id, updateStateRequest);
+        this.requestService.updateStateRequest(request.id, this.updateStateRequest).subscribe({
+          next: () => {
+            this.messageService.add({ 
+              severity: 'success', 
+              summary: 'Solicitud Aprobada', 
+              detail: 'La solicitud ha sido aprobada correctamente.', 
+              life: 3000 
+            });
+          },
+          error: (error) => {
+            this.messageService.add({ 
+              severity: 'error', 
+              summary: 'Error', 
+              detail: error.message, 
+              life: 3000 
+            });
+          }
+        });
       }
     });
   }
 
   rejectRequest(request: Request) {
+    this.selectedRequest = request;
     this.motivoRechazo = '';
-    this.confirmationService.confirm({
-      message: `
-        <div>
-          <p>¿Estás seguro de rechazar la solicitud de: ` + request.nombre + `?</p>
-          <label for="motivo">Motivo de rechazo:</label>
-          <input id="motivo" type="text" [(ngModel)]="motivoRechazo" class="p-inputtext p-component" />
-        </div>`,
-      header: 'Rechazar',
-      icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Rechazar',
-      rejectLabel: 'Cancelar',
-      rejectVisible: true,
-      accept: () => {
-        if (this.motivoRechazo.trim() === '') {
-          this.confirmationService.confirm({
-            message: 'Debes ingresar un motivo para rechazar la solicitud.',
-            header: 'Advertencia',
-            icon: 'pi pi-exclamation-circle',
-            acceptLabel: 'OK',
-            rejectVisible: false
-          });
-        } else {
-          let updateStateRequest: UpdateStateRequest = {
-            estadoSolicitud: 2,
-            motivoRechazo: this.motivoRechazo
-          };
-          this.requestService.updateStateRequest(request.id, updateStateRequest);
-        }
+    this.rejectDialog = true;
+  }
+
+  confirmReject() {
+    if (!this.motivoRechazo.trim()) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Advertencia',
+        detail: 'Debe ingresar un motivo de rechazo',
+        life: 3000
+      });
+      return;
+    }
+  
+    this.updateStateRequest = {
+      estadoSolicitud: 2,
+      motivoRechazo: this.motivoRechazo
+    };
+  
+    this.requestService.updateStateRequest(this.selectedRequest?.id!, this.updateStateRequest).subscribe({
+      next: () => {
+        this.messageService.add({ 
+          severity: 'success', 
+          summary: 'Solicitud Rechazada', 
+          detail: 'La solicitud ha sido rechazada correctamente.', 
+          life: 3000 
+        });
+      },
+      error: (error) => {
+        this.messageService.add({ 
+          severity: 'error', 
+          summary: 'Error', 
+          detail: error.message, 
+          life: 3000 
+        });
       }
     });
+    this.rejectDialog = false;
   }
 
 }

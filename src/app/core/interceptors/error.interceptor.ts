@@ -16,12 +16,6 @@ export const ErrorInterceptor: HttpInterceptorFn = (req, next) => {
             if (error.status === 401) {
                 authService.logout();
                 router.navigate(['/login']);
-            } else if (error.status === 403) {
-                console.error('Acceso denegado');
-            } else if (error.status === 400) {
-                console.error('Bad Request');
-            } else if (error.status >= 500) {
-                console.error('Error del servidor');
             }
 
             return throwError(() => new Error(error.message));
