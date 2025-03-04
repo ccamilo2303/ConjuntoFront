@@ -1,3 +1,5 @@
+import { Pagination } from "./pagination.model";
+
 export interface Request {
     id: string;
     nombre: string;
@@ -8,12 +10,6 @@ export interface Request {
     descripcion: string;
     comentario: string;
     fechaCreacion: string;
-}
-
-export interface Pagination {
-    size: number;
-    page: number;
-    nextPage: number;
 }
 
 export interface RequestsResponse {

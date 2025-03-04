@@ -1,3 +1,6 @@
+import { Pagination } from "./pagination.model";
+import { Unit } from "./unit.model";
+
 export interface Resident {
   idResidenteUnidad: number;
   nombre: string;
@@ -6,12 +9,6 @@ export interface Resident {
   tipo: string;
   estado: string;
   fechaRegistro: string;
-}
-
-export interface Pagination {
-  size: number;
-  page: number;
-  nextPage: number;
 }
 
 export interface ResidentsResponse {
@@ -27,14 +24,7 @@ export interface ResidentTypeUpdate {
   idTipo: number;
 }
 
-export interface ResidentUnit {
-  id: number;
-  interior: string;
-  conjunto: string;
-  estado: string;
-}
-
 export interface ResidentUnitsResponse {
-  unidades: ResidentUnit[];
+  unidades: Unit[];
   pages: Pagination;
 }

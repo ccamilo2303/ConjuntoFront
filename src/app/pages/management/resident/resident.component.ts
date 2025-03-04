@@ -19,9 +19,10 @@ import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ResidentService } from '../../../core/services/resident.service';
-import { Resident, ResidentsResponse, ResidentStatusUpdate, ResidentTypeUpdate, ResidentUnit, ResidentUnitsResponse } from '../../../core/models/resident.model';
+import { Resident, ResidentsResponse, ResidentStatusUpdate, ResidentTypeUpdate, ResidentUnitsResponse } from '../../../core/models/resident.model';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TableRowExpandEvent } from 'primeng/table';
+import { Unit } from '../../../core/models/unit.model';
 
 
 interface Column {
@@ -72,7 +73,7 @@ export class ResidentComponent {
   residentDialog: boolean = false;
   residents = signal<Resident[]>([]);
   resident!: Resident;
-  residentUnits = signal<ResidentUnit[]>([]);
+  residentUnits = signal<Unit[]>([]);
   selectedResidents!: Resident[] | null;
   submitted: boolean = false;
   residentTypes!: any[];
