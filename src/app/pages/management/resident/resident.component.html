@@ -1,6 +1,6 @@
 <p-toolbar styleClass="mb-6">
     <ng-template #start>
-        <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedResidents()" [disabled]="!selectedResidents || !selectedResidents.length" />
+        <p-button severity="secondary" label="Inactivar" icon="pi pi-trash" outlined (onClick)="deleteSelectedResidents()" [disabled]="!selectedResidents || !selectedResidents.length" />
     </ng-template>
 
     <ng-template #end>
@@ -14,7 +14,7 @@
     [rows]="10"
     [columns]="cols"
     [paginator]="true"
-    [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']"
+    [globalFilterFields]="['nombre', 'email', 'telefono', 'tipo', 'estado']"
     [tableStyle]="{ 'min-width': '75rem' }"
     [(selection)]="selectedResidents"
     [rowHover]="true"
@@ -22,6 +22,7 @@
     currentPageReportTemplate="Mostrando {first} - {last} de {totalRecords} residentes"
     [showCurrentPageReport]="true"
     [rowsPerPageOptions]="[10, 20, 30]"
+    [expandedRowKeys]="expandedRows" (onRowExpand)="onRowExpand($event)"
 >
     <ng-template #caption>
         <div class="flex items-center justify-between">
@@ -34,6 +35,7 @@
     </ng-template>
     <ng-template #header>
         <tr>
+            <th style="width: 5rem"></th>
             <th style="width: 3rem">
                 <p-tableHeaderCheckbox />
             </th>
@@ -64,8 +66,11 @@
             <th></th>
         </tr>
     </ng-template>
-    <ng-template #body let-resident>
+    <ng-template #body let-resident let-expanded="expanded">
         <tr>
+            <td>
+                <p-button type="button" pRipple [pRowToggler]="resident" [text]="true" [rounded]="true" [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+            </td>
             <td style="width: 3rem">
                 <p-tableCheckbox [value]="resident" />
             </td>
@@ -73,11 +78,41 @@
             <td>{{ resident.email }}</td>
             <td>{{ resident.telefono }}</td>
             <td>{{ resident.tipo }}</td>
-            <td>{{ resident.estado }}</td>
+            <td><p-tag [value]="resident.estado" [severity]="getColorState(resident.estado)" /></td>
             <td>{{ resident.fechaRegistro }}</td>
             <td>
                 <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editResident(resident)" />
-                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteResident(resident)" />
+                <!--<p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteResident(resident)" />-->
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template #expandedrow let-resident>
+        <tr>
+            <td colspan="12">
+                <div class="p-4">
+                    <h5>Unidades asociadas a {{ resident.nombre }}</h5>
+                    <p-table [value]="residentUnits()" dataKey="id">
+                        <ng-template #header>
+                            <tr>
+                                <th pSortableColumn="interior">Interior <p-sortIcon field="interior" /></th>
+                                <th pSortableColumn="conjunto">Conjunto <p-sortIcon field="conjunto" /></th>
+                                <th pSortableColumn="estado">Estado <p-sortIcon field="estado" /></th>
+                            </tr>
+                        </ng-template>
+                        <ng-template #body let-unit>
+                            <tr>
+                                <td>{{ unit.interior }}</td>
+                                <td>{{ unit.conjunto }}</td>
+                                <td>{{ unit.estado }}</td>
+                            </tr>
+                        </ng-template>
+                        <ng-template #emptymessage>
+                            <tr>
+                                <td colspan="6">No existen unidades asociadas para este residente.</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
             </td>
         </tr>
     </ng-template>
@@ -88,38 +123,42 @@
         <div class="flex flex-col gap-6">
             <div>
                 <label for="nombre" class="block font-bold mb-3">Nombre</label>
-                <input type="text" pInputText id="nombre" [(ngModel)]="resident.nombre" required autofocus fluid />
+                <input type="text" disabled pInputText id="nombre" [(ngModel)]="resident.nombre" required autofocus fluid />
                 <small class="text-red-500" *ngIf="submitted && !resident.nombre">El nombre es requerido.</small>
             </div>
             <div>
                 <label for="email" class="block font-bold mb-3">Email</label>
-                <input type="email" pInputText id="email" [(ngModel)]="resident.email" required autofocus fluid />
+                <input type="email" disabled pInputText id="email" [(ngModel)]="resident.email" required autofocus fluid />
                 <small class="text-red-500" *ngIf="submitted && !resident.email">El email es requerido.</small>
             </div>
             <div>
                 <label for="telefono" class="block font-bold mb-3">Telefono</label>
-                <input type="number" pInputText id="telefono" [(ngModel)]="resident.telefono" required autofocus fluid />
+                <input type="number" disabled pInputText id="telefono" [(ngModel)]="resident.telefono" required autofocus fluid />
                 <small class="text-red-500" *ngIf="submitted && !resident.telefono">El telefono es requerido.</small>
             </div>
             <div>
                 <label for="tipo" class="block font-bold mb-3">Tipo</label>
                 <p-select [(ngModel)]="resident.tipo" inputId="tipo" [options]="residentTypes" optionLabel="label" optionValue="label" placeholder="Selectiona un tipo" fluid />
+                <small class="text-red-500" *ngIf="submitted && !resident.tipo">El tipo es requerido.</small>
             </div>
             <div>
                 <label for="estado" class="block font-bold mb-3">Estado</label>
                 <p-select [(ngModel)]="resident.estado" inputId="estado" [options]="residentStates" optionLabel="label" optionValue="label" placeholder="Selecciona un estado" fluid />
+                <small class="text-red-500" *ngIf="submitted && !resident.estado">El estado es requerido.</small>
             </div>
             <div>
                 <label for="fechaRegistro" class="block font-bold mb-3">Fecha Registro</label>
-                <p-datepicker [style]="{ width: '100%'}" [(ngModel)]="resident.fechaRegistro" inputId="fechaRegistro" [showIcon]="true" [showButtonBar]="true" ></p-datepicker>
+                <p-datepicker  disabled [style]="{ width: '100%'}" [(ngModel)]="resident.fechaRegistro" inputId="fechaRegistro" [showIcon]="true" [showButtonBar]="true" ></p-datepicker>
+                <small class="text-red-500" *ngIf="submitted && !resident.fechaRegistro">La fecha de registro es requerida.</small>
             </div>
         </div>
     </ng-template>
 
     <ng-template #footer>
-        <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
-        <p-button label="Save" icon="pi pi-check" (click)="updateResident()" />
+        <p-button label="Cancelar" icon="pi pi-times" text (click)="hideDialog()" />
+        <p-button label="Actualizar" icon="pi pi-check" (click)="updateResident()" />
     </ng-template>
 </p-dialog>
 
 <p-confirmdialog />
+<p-toast />
